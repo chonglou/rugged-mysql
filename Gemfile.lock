@@ -1,0 +1,19 @@
+PATH
+  remote: .
+  specs:
+    rugged-mysql (0.0.1)
+      rugged
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    rake (10.3.2)
+    rugged (0.21.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  bundler (~> 1.7)
+  rake (~> 10.0)
+  rugged-mysql!
