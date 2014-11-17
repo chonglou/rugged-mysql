@@ -3,6 +3,8 @@ rugged-mysql
 
 Enables rugged to store git objects and references into MySQL.
 
+Using https://github.com/libgit2/libgit2-backends/tree/master/mysql
+
 
 ## Installation
 

@@ -8,6 +8,8 @@ GEM
   remote: https://rubygems.org/
   specs:
     rake (10.3.2)
+    rake-compiler (0.9.3)
+      rake
     rugged (0.21.0)
 
 PLATFORMS
@@ -16,4 +18,5 @@ PLATFORMS
 DEPENDENCIES
   bundler (~> 1.7)
   rake (~> 10.0)
+  rake-compiler
   rugged-mysql!
