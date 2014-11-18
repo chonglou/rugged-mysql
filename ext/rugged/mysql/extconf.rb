@@ -2,6 +2,7 @@ require 'mkmf'
 require 'rugged'
 
 $CFLAGS << " #{ENV['CFLAGS']}"
+$CFLAGS << ' -I/usr/include/mysql'
 $CFLAGS << ' -g'
 $CFLAGS << ' -O3' unless $CFLAGS[/-O\d/]
 $CFLAGS << ' -Wall -Wno-comment'

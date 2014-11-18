@@ -3,7 +3,6 @@ rugged-mysql
 
 Enables rugged to store git objects and references into MySQL.
 
-Using https://github.com/libgit2/libgit2-backends/tree/master/mysql
 
 
 ## Installation
@@ -22,7 +21,7 @@ And then execute:
 Create the backend:
 
     require 'rugged-mysql'
-    mysql_backend = Rugged::MySql::Backend.new(host:'localhost', port:3306, username:'git', password:'tig', db:'git')
+    mysql_backend = Rugged::MySql::Backend.new(host:'localhost', port:3306, username:'git', password:'tig', database:'git')
 
 And pass it to rugged:
     
