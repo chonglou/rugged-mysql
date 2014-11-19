@@ -20,5 +20,5 @@ unless MAKE
   abort 'ERROR: GNU make is required to build Rugged.'
 end
 
-create_makefile('rugged/redis/rugged-mysql')
+create_makefile('rugged/mysql/rugged-mysql')
 
