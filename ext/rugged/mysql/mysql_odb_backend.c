@@ -485,9 +485,11 @@ init_statements (mysql_odb_backend * backend)
 
 int
 git_odb_backend_mysql (git_odb_backend ** backend_out, const char *mysql_host,
+unsigned int mysql_port,
+const char *mysql_unix_socket,
+const char *mysql_db,
 		       const char *mysql_user, const char *mysql_passwd,
-		       const char *mysql_db, unsigned int mysql_port,
-		       const char *mysql_unix_socket,
+
 		       unsigned long mysql_client_flag)
 {
   mysql_odb_backend *backend;

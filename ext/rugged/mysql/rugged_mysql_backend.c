@@ -17,9 +17,9 @@ int git_odb__error_ambiguous (char *);
 typedef struct _rugged_backend
 {
   int (*odb_backend) (git_odb_backend ** backend_out,
-		      struct _rugged_backend * backend, const char *path);
+		      struct _rugged_backend * backend);
   int (*refdb_backend) (git_refdb_backend ** backend_out,
-			struct _rugged_backend * backend, const char *path);
+			struct _rugged_backend * backend);
 } rugged_backend;
 
 typedef struct
@@ -48,16 +48,17 @@ rb_rugged_mysql_backend__free (rugged_mysql_backend * backend)
 }
 
 static int
-rugged_mysql_odb_backend (git_odb_backend ** backend_out,
-			  rugged_backend * backend, const char *path)
+rugged_mysql__odb_backend (git_odb_backend ** backend_out,
+			  rugged_backend * backend)
 {
-  //todo
-  return -1;
+  rugged_mysql_backend* rugged_backend = (rugged_mysql_backend*)backend;
+
+  return git_odb_backend_mysql(backend_out, rugged_backend->host,rugged_backend->port, rugged_backend->socket, rugged_backend->username, rugged_backend->password, rugged_backend->database, NULL);
 }
 
 static int
-rugged_mysql_refdb_backend (git_refdb_backend ** backend_out,
-			    rugged_backend * backend, const char *path)
+rugged_mysql__refdb_backend (git_refdb_backend ** backend_out,
+			    rugged_backend * backend)
 {
   //todo
   return -1;
@@ -71,8 +72,8 @@ rugged_mysql_backend_new (char *host, int port,
   rugged_mysql_backend *mysql_backend =
     malloc (sizeof (rugged_mysql_backend));
 
-  mysql_backend->backend.odb_backend = rugged_mysql_odb_backend;
-  mysql_backend->backend.refdb_backend = rugged_mysql_refdb_backend;
+  mysql_backend->backend.odb_backend = rugged_mysql__odb_backend;
+  mysql_backend->backend.refdb_backend = rugged_mysql__refdb_backend;
 
   mysql_backend->host = strdup (host);
   mysql_backend->port = port;
