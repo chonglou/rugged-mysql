@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     rugged-mysql (0.0.1)
-      rugged
+      rugged (~> 0.21.2)
 
 GEM
   remote: https://rubygems.org/
@@ -10,7 +10,7 @@ GEM
     rake (10.3.2)
     rake-compiler (0.9.3)
       rake
-    rugged (0.21.0)
+    rugged (0.21.2)
 
 PLATFORMS
   ruby

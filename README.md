@@ -9,7 +9,10 @@ Enables rugged to store git objects and references into MySQL.
 
 Add this line to you application's Gemfile:
 
-    gem 'rugged-mysql', git:git@github.com:chonglou/rugged-mysql.git
+    gem 'rugged-mysql'
+Or:
+
+    gem 'rugged-mysql', chonglou/rugged-mysql
 
 And then execute:
 

@@ -1,3 +1,7 @@
+/*
+* source: https://github.com/libgit2/libgit2-backends/blob/master/mysql/mysql.c
+*/
+
 #include <assert.h>
 #include <string.h>
 #include <git2.h>
