@@ -40,4 +40,4 @@ Each instance of the backend consumes a single MySql connection.
 Enjoy it!
 
 ## Contributing
-Fork libgit2/rugged on GitHub, make it awesomer (preferably in a branch named for the topic), send a pull request.
+Fork chonglou/rugged-mysql on GitHub, make it awesomer (preferably in a branch named for the topic), send a pull request.
