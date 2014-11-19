@@ -1,14 +1,18 @@
 #include <assert.h>
 #include <string.h>
+
 #include <git2.h>
-#include <git2/tag.h>
-#include <git2/buffer.h>
-#include <git2/object.h>
-#include <git2/refdb.h>
-#include <git2/errors.h>
 #include <git2/sys/refdb_backend.h>
 #include <git2/sys/refs.h>
 #include <git2/sys/reflog.h>
+#include <refs.h>
+#include <iterator.h>
+#include <refdb.h>
+#include <fnmatch.h>
+#include <pool.h>
+#include <buffer.h>
+#include <sqlite3.h>
+
 #include <mysql.h>
 
 #define GIT2_REFDB_TABLE_NAME "git2_refdb"
@@ -87,9 +91,9 @@ mysql_refdb_backend__exists(int *exists,
 
 	*exists = 0;
 
-	bind_buffers[0].buffer = (void *)ref_name
-	    bind_buffers[0].buffer_type = MYSQL_TYPE_STRING;
-	if (mysql_stmt_bind_param(backend->str_read, bind_buffers) != 0) {
+	bind_buffers[0].buffer = (void *)ref_name;
+	bind_buffers[0].buffer_type = MYSQL_TYPE_STRING;
+	if (mysql_stmt_bind_param(backend->st_read, bind_buffers) != 0) {
 		return 0;
 	}
 	if (mysql_stmt_execute(backend->st_read) != 0) {
@@ -115,6 +119,7 @@ loose_lookup(git_reference ** out,
 	git_buf ref_buf = GIT_BUF_INIT;
 	MYSQL_BIND bind_buffers[1];
 	MYSQL_ROW row;
+	int error = GIT_ERROR;
 
 	assert(backend);
 
@@ -131,7 +136,7 @@ loose_lookup(git_reference ** out,
 	if (mysql_stmt_store_result(backend->st_read) != 0) {
 		return ref_error_notfound(ref_name);
 	}
-	if ((row = mysql_fetch_row())) {
+	if ((row = mysql_fetch_row(backend->st_read))) {
 		char *raw_ref = row[0];
 
 		git_buf_set(&ref_buf, raw_ref, strlen(raw_ref));
@@ -141,12 +146,13 @@ loose_lookup(git_reference ** out,
 
 			git_buf_rtrim(&ref_buf);
 
-			if (!(target = parse_symbolic(&ref_buf)))
+			if (!(target = parse_symbolic(&ref_buf))) {
 				error = -1;
-			else if (out != NULL)
+			} else if (out != NULL) {
 				*out =
 				    git_reference__alloc_symbolic(ref_name,
 								  target);
+			}
 		} else {
 			git_oid oid;
 
@@ -173,8 +179,9 @@ mysql_refdb_backend__lookup(git_reference ** out,
 
 	assert(backend);
 
-	if (!(error = loose_lookup(out, backend, ref_name)))
+	if (!(error = loose_lookup(out, backend, ref_name))) {
 		return 0;
+	}
 
 	return error;
 }
@@ -212,8 +219,7 @@ iter_load_loose_paths(mysql_refdb_backend * backend, mysql_refdb_iter * iter)
 		return GIT_ERROR;
 	}
 
-	while ((row = mysql_fetch_row(backend->st_read_all))
-	       && (error == mysql_ROW)) {
+	while ((row = mysql_fetch_row(backend->st_read_all))) {
 		char *ref_dup;
 		char *ref_name = row[0];
 
@@ -353,7 +359,7 @@ mysql_refdb_backend__write(git_refdb_backend * _backend,
 		return error;
 	}
 
-	error = mysql_ERROR;
+	error = GIT_ERROR;
 
 	bind_buffers[0].buffer = (void *)ref->name;
 	bind_buffers[0].buffer_type = MYSQL_TYPE_STRING;
@@ -481,16 +487,16 @@ static void mysql_refdb_backend__free(git_refdb_backend * _backend)
 	assert(backend);
 
 	if (backend->st_read) {
-		mysql_stmt_close backend->st_read;
+		mysql_stmt_close(backend->st_read);
 	}
 	if (backend->st_read_all) {
-		mysql_stmt_close backend->st_read_all;
+		mysql_stmt_close(backend->st_read_all);
 	}
 	if (backend->st_write) {
-		mysql_stmt_close backend->st_write;
+		mysql_stmt_close(backend->st_write);
 	}
 	if (backend->st_delete) {
-		mysql_stmt_close backend->st_delete;
+		mysql_stmt_close(backend->st_delete);
 	}
 	mysql_close(backend->db);
 
@@ -678,13 +684,14 @@ git_refdb_backend_mysql(git_refdb_backend ** backend_out,
 			unsigned long mysql_client_flag)
 {
 	mysql_refdb_backend *backend;
+	my_bool reconnect = 1;
 
 	backend = calloc(1, sizeof(mysql_refdb_backend));
 	if (backend == NULL) {
 		return GITERR_NOMEMORY;
 	}
 
-	backend->db = mysql_init(backend->db) reconnect = 1;
+	backend->db = mysql_init(backend->db);
 
 	if (mysql_options(backend->db, MYSQL_OPT_RECONNECT, &reconnect) != 0) {
 		goto cleanup;
@@ -696,13 +703,11 @@ git_refdb_backend_mysql(git_refdb_backend ** backend_out,
 		goto cleanup;
 	}
 
-	error = init_db(backend->db);
-	if (error < 0) {
+	if (init_db(backend->db) < 0) {
 		goto cleanup;
 	}
 
-	error = init_statements(backend);
-	if (error < 0) {
+	if (init_statements(backend) < 0) {
 		goto cleanup;
 	}
 
