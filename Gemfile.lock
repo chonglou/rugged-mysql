@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rugged-mysql (0.0.1)
+    rugged-mysql (0.0.2)
       rugged (~> 0.21.2)
 
 GEM
@@ -18,5 +18,5 @@ PLATFORMS
 DEPENDENCIES
   bundler (~> 1.7)
   rake (~> 10.0)
-  rake-compiler
+  rake-compiler (~> 0.9.3)
   rugged-mysql!

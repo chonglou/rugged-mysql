@@ -1,7 +1,7 @@
 rugged-mysql
 ============
 
-Enables rugged to store git objects and references into MySQL.
+Enables rugged(libgit2 bindings in Ruby, visit by https://github.com/libgit2/rugged) to store git objects and references into MySQL.
 
 
 
@@ -38,3 +38,6 @@ Or
 Each instance of the backend consumes a single MySql connection.
 
 Enjoy it!
+
+## Contributing
+Fork libgit2/rugged on GitHub, make it awesomer (preferably in a branch named for the topic), send a pull request.
