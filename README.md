@@ -12,7 +12,7 @@ Add this line to you application's Gemfile:
     gem 'rugged-mysql'
 Or:
 
-    gem 'rugged-mysql', chonglou/rugged-mysql
+    gem 'rugged-mysql', github: 'chonglou/rugged-mysql'
 
 And then execute:
 
